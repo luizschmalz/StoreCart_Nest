@@ -1,4 +1,27 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateProductDto } from './create-product.dto';
+import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class UpdateProductDto extends PartialType(CreateProductDto) {}
+export class UpdateProductDto {
+  @ApiProperty({
+    description: 'Nome do produto',
+    example: 'Camisa Polo',
+  })
+  @IsString()
+  @IsNotEmpty()
+  name?: string;
+
+  @ApiPropertyOptional({
+    description: 'Descrição do produto',
+    example: 'Camisa polo masculina tamanho M',
+  })
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty({
+    description: 'Preço do produto',
+    example: 59.9,
+  })
+  @IsNumber()
+  price?: number;
+}

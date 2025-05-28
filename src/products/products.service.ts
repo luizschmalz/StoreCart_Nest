@@ -39,4 +39,20 @@ export class ProductsService {
       where: { id },
     });
   }
+
+  async searchMany(
+    name?: string,
+    precoMin?: number,
+    precoMax?: number,
+  ): Promise<Product[]> {
+    return this.prisma.product.findMany({
+      where: {
+        name: name ? { contains: name } : undefined,
+        price: {
+          gte: precoMin ?? undefined,
+          lte: precoMax ?? undefined,
+        },
+      },
+    });
+  }
 }

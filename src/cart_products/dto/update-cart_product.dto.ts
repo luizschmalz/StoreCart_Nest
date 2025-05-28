@@ -1,14 +1,12 @@
 import { IsInt, IsPositive, IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateCartProductDto {
-  @IsOptional()
-  @IsInt()
-  cartId?: number;
-
-  @IsOptional()
-  @IsInt()
-  productId?: number;
-
+  @ApiPropertyOptional({
+    description: 'Quantidade do produto',
+    example: 3,
+    minimum: 1,
+  })
   @IsOptional()
   @IsInt()
   @IsPositive()

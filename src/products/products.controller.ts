@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -23,6 +24,19 @@ export class ProductsController {
   @Get()
   findAll() {
     return this.productsService.findAll();
+  }
+
+  @Get('search')
+  search(
+    @Query('name') name?: string,
+    @Query('precoMin') precoMin?: string,
+    @Query('precoMax') precoMax?: string,
+  ) {
+    return this.productsService.searchMany(
+      name,
+      precoMin ? parseFloat(precoMin) : undefined,
+      precoMax ? parseFloat(precoMax) : undefined,
+    );
   }
 
   @Get(':id')
