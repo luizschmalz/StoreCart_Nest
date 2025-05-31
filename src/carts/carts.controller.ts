@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { CartService } from './carts.service';
 import { UpdateCartDto } from './dto/update-cart.dto';
+import { CreateCartDto } from './dto/create-cart.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('carts')
@@ -18,8 +19,8 @@ export class CartsController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  create() {
-    return this.cartService.create();
+  create(@Body() createCartDto: CreateCartDto) {
+    return this.cartService.create(createCartDto);
   }
 
   @UseGuards(AuthGuard('jwt'))

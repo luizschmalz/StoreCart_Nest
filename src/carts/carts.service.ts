@@ -1,34 +1,34 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { Cart } from '@prisma/client';
+type Cart = any;
 import { UpdateCartDto } from './dto/update-cart.dto';
+import { CreateCartDto } from './dto/create-cart.dto';
 
 @Injectable()
 export class CartService {
   constructor(private prisma: PrismaService) {}
 
-  // Cria um carrinho vazio
-  async create(): Promise<Cart> {
+  async create(dto: CreateCartDto): Promise<Cart> {
     return this.prisma.cart.create({
-      data: {}, // sem produtos inicialmente
+      data: {
+        userId: dto.userId,
+      },
     });
   }
 
-  // Busca todos os carrinhos, incluindo produtos e quantidade
   async findAll(): Promise<Cart[]> {
     return this.prisma.cart.findMany({
       include: {
         products: {
           include: {
-            product: true, // dados do produto dentro do CartProduct
+            product: true,
           },
         },
       },
     });
   }
 
-  // Busca um carrinho pelo id, incluindo produtos
-  async findOne(id: number): Promise<Cart | null> {
+  async findOne(id: number): Promise<Cart> {
     return this.prisma.cart.findUnique({
       where: { id },
       include: {
@@ -66,9 +66,17 @@ export class CartService {
           throw new NotFoundException(`Carrinho com id ${id} não encontrado`);
         }
 
-        const total = cart.products.reduce((acc, item) => {
-          return acc + item.quantity * item.product.price;
-        }, 0);
+        const total = cart.products.reduce(
+          (
+            acc: number,
+            item: { quantity: number; product: { price: number } },
+          ) => {
+            return parseFloat(
+              (acc + item.quantity * item.product.price).toFixed(2),
+            );
+          },
+          0,
+        );
 
         return {
           message: 'Compra concluída com sucesso!',
@@ -82,14 +90,11 @@ export class CartService {
     return { message: 'Status do carrinho atualizado com sucesso.' };
   }
 
-  // Remove carrinho e seus produtos relacionados em cascata
   async remove(id: number): Promise<Cart> {
-    // Primeiro remove os produtos do carrinho
     await this.prisma.cartProduct.deleteMany({
       where: { cartId: id },
     });
 
-    // Depois remove o carrinho
     return this.prisma.cart.delete({
       where: { id },
     });

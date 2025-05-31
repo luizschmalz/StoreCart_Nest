@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -16,25 +20,54 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const user = await this.prisma.user.create({
       data: {
-        email: dto.login,
+        login: dto.login,
         password: hashedPassword,
       },
     });
-    return { id: user.id, email: user.email };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    return { id: user.id, login: user.login };
   }
 
   async login(dto: LoginUserDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.login },
+      where: { login: dto.login },
     });
 
     if (!user || !(await bcrypt.compare(dto.password, user.password))) {
-      throw new UnauthorizedException('Email ou senha inválidos');
+      throw new UnauthorizedException('login ou senha inválidos');
     }
 
-    const payload = { sub: user.id, email: user.email };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const payload = { sub: user.id, login: user.login };
     const token = this.jwtService.sign(payload);
 
     return { access_token: token };
+  }
+
+  async findAllUsers() {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        login: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async findUserById(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        login: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+    }
+
+    return user;
   }
 }

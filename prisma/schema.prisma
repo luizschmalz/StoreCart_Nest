@@ -26,6 +26,9 @@ model Cart {
   createdAt  DateTime      @default(now())
   products   CartProduct[]
   status     String        @default("pendente")
+
+  userId     Int          
+  user       User          @relation(fields: [userId], references: [id])
 }
 
 model CartProduct {
@@ -39,7 +42,8 @@ model CartProduct {
 
 model User {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
+  login     String   @unique
   password  String
   createdAt DateTime @default(now())
+  carts     Cart[]   
 }

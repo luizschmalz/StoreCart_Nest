@@ -15,10 +15,11 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('StoreCart API')
+    .setDescription(
+      'Description of all routes and schemas in the StoreCart API',
+    )
     .setVersion('1.0')
-    .addTag('cats')
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);

@@ -1,13 +1,14 @@
 import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateProductDto {
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Nome do produto',
     example: 'Camisa Polo',
   })
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   name?: string;
 
   @ApiPropertyOptional({
@@ -18,10 +19,11 @@ export class UpdateProductDto {
   @IsOptional()
   description?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Preço do produto',
     example: 59.9,
   })
   @IsNumber()
+  @IsOptional()
   price?: number;
 }
