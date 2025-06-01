@@ -24,7 +24,6 @@ export class AuthService {
         password: hashedPassword,
       },
     });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { id: user.id, login: user.login };
   }
 
@@ -37,7 +36,6 @@ export class AuthService {
       throw new UnauthorizedException('login ou senha inválidos');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const payload = { sub: user.id, login: user.login };
     const token = this.jwtService.sign(payload);
 

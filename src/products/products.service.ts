@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { Product } from '@prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+type Product = any;
 
 @Injectable()
 export class ProductsService {
@@ -18,7 +18,7 @@ export class ProductsService {
     return this.prisma.product.findMany();
   }
 
-  async findOne(id: number): Promise<Product | null> {
+  async findOne(id: number): Promise<Product> {
     return this.prisma.product.findUnique({
       where: { id },
     });
