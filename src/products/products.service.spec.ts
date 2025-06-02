@@ -114,7 +114,6 @@ describe('ProductsService', () => {
     it('should remove a product by id', async () => {
       jest.spyOn(service, 'remove').mockImplementation((id: number) => {
         if (id === 1) {
-          // Retorna objeto completo para produto removido com id 1
           return Promise.resolve({
             id: 1,
             name: 'Deleted Product',
@@ -122,11 +121,9 @@ describe('ProductsService', () => {
             description: 'teste',
           });
         }
-        // Retorna null para produto não encontrado
         return Promise.resolve(null);
       });
 
-      // Testa remoção existente — deve retornar objeto completo
       await expect(service.remove(1)).resolves.toEqual({
         id: 1,
         name: 'Deleted Product',
@@ -134,7 +131,6 @@ describe('ProductsService', () => {
         description: 'teste',
       });
 
-      // Testa remoção inexistente — deve retornar null
       await expect(service.remove(999)).resolves.toBeNull();
     });
   });

@@ -7,6 +7,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 describe('AuthController', () => {
   let controller: AuthController;
+  let service: AuthService;
 
   const mockAuthService = {
     register: jest.fn(),
@@ -33,6 +34,7 @@ describe('AuthController', () => {
       .compile();
 
     controller = module.get<AuthController>(AuthController);
+    service = module.get<AuthService>(AuthService);
   });
 
   afterEach(() => {
@@ -54,7 +56,8 @@ describe('AuthController', () => {
       mockAuthService.register.mockResolvedValue(result);
 
       expect(await controller.register(dto)).toEqual(result);
-      expect(mockAuthService.register).toHaveBeenCalledWith(dto);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(service.register).toHaveBeenCalledWith(dto);
     });
   });
 
@@ -69,7 +72,8 @@ describe('AuthController', () => {
       mockAuthService.login.mockResolvedValue(result);
 
       expect(await controller.login(dto)).toEqual(result);
-      expect(mockAuthService.login).toHaveBeenCalledWith(dto);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(service.login).toHaveBeenCalledWith(dto);
     });
   });
 
@@ -83,7 +87,8 @@ describe('AuthController', () => {
       mockAuthService.findAllUsers.mockResolvedValue(result);
 
       expect(await controller.findAllUsers()).toEqual(result);
-      expect(mockAuthService.findAllUsers).toHaveBeenCalled();
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(service.findAllUsers).toHaveBeenCalled();
     });
   });
 
@@ -94,7 +99,8 @@ describe('AuthController', () => {
       mockAuthService.findUserById.mockResolvedValue(result);
 
       expect(await controller.findUserById('1')).toEqual(result);
-      expect(mockAuthService.findUserById).toHaveBeenCalledWith(1);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(service.findUserById).toHaveBeenCalledWith(1);
     });
   });
 });

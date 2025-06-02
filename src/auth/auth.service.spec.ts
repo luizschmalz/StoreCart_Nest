@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { PrismaService } from 'src/prisma.service';
@@ -7,6 +8,8 @@ import { UnauthorizedException, NotFoundException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let service: AuthService;
+  let prisma: PrismaService;
+  let jwtService: JwtService;
 
   const mockPrismaService = {
     user: {
@@ -30,6 +33,8 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
+    prisma = module.get<PrismaService>(PrismaService);
+    jwtService = module.get<JwtService>(JwtService);
   });
 
   afterEach(() => {
@@ -53,7 +58,7 @@ describe('AuthService', () => {
       const result = await service.register(dto);
 
       expect(bcrypt.hash).toHaveBeenCalledWith(dto.password, 10);
-      expect(mockPrismaService.user.create).toHaveBeenCalledWith({
+      expect(prisma.user.create).toHaveBeenCalledWith({
         data: { login: dto.login, password: hashedPassword },
       });
       expect(result).toEqual({ id: 1, login: dto.login });
@@ -74,11 +79,11 @@ describe('AuthService', () => {
 
       const result = await service.login(dto);
 
-      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
         where: { login: dto.login },
       });
       expect(bcrypt.compare).toHaveBeenCalledWith(dto.password, user.password);
-      expect(mockJwtService.sign).toHaveBeenCalledWith({
+      expect(jwtService.sign).toHaveBeenCalledWith({
         sub: user.id,
         login: user.login,
       });
@@ -117,7 +122,7 @@ describe('AuthService', () => {
 
       const result = await service.findAllUsers();
 
-      expect(mockPrismaService.user.findMany).toHaveBeenCalledWith({
+      expect(prisma.user.findMany).toHaveBeenCalledWith({
         select: { id: true, login: true, createdAt: true },
       });
       expect(result).toEqual(users);
@@ -131,7 +136,7 @@ describe('AuthService', () => {
 
       const result = await service.findUserById(1);
 
-      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
         where: { id: 1 },
         select: { id: true, login: true, createdAt: true },
       });

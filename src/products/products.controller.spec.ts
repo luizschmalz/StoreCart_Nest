@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
@@ -6,6 +7,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 
 describe('ProductsController', () => {
   let controller: ProductsController;
+  let service: ProductsService;
 
   const mockProductService = {
     create: jest.fn(),
@@ -28,6 +30,7 @@ describe('ProductsController', () => {
     }).compile();
 
     controller = module.get<ProductsController>(ProductsController);
+    service = module.get<ProductsService>(ProductsService);
   });
   it('should be defined', () => {
     expect(controller).toBeDefined();
@@ -41,21 +44,21 @@ describe('ProductsController', () => {
         price: 100,
       };
       await controller.create(dto);
-      expect(mockProductService.create).toHaveBeenCalledWith(dto);
+      expect(service.create).toHaveBeenCalledWith(dto);
     });
   });
 
   describe('findAll', () => {
     it('should call service.findAll', async () => {
       await controller.findAll();
-      expect(mockProductService.findAll).toHaveBeenCalled();
+      expect(service.findAll).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
     it('should call service.findOne with correct id', async () => {
       await controller.findOne('1');
-      expect(mockProductService.findOne).toHaveBeenCalledWith(1);
+      expect(service.findOne).toHaveBeenCalledWith(1);
     });
   });
 
@@ -63,25 +66,21 @@ describe('ProductsController', () => {
     it('should call service.update with correct id and data', async () => {
       const dto: UpdateProductDto = { name: 'Updated' };
       await controller.update('1', dto);
-      expect(mockProductService.update).toHaveBeenCalledWith(1, dto);
+      expect(service.update).toHaveBeenCalledWith(1, dto);
     });
   });
 
   describe('remove', () => {
     it('should call service.remove with correct id', async () => {
       await controller.remove('1');
-      expect(mockProductService.remove).toHaveBeenCalledWith(1);
+      expect(service.remove).toHaveBeenCalledWith(1);
     });
   });
 
   describe('search', () => {
     it('should call service.searchMany with correct query parameters', async () => {
       await controller.search('Product', '10', '100');
-      expect(mockProductService.searchMany).toHaveBeenCalledWith(
-        'Product',
-        10,
-        100,
-      );
+      expect(service.searchMany).toHaveBeenCalledWith('Product', 10, 100);
     });
 
     it('should handle missing precoMin and precoMax', async () => {

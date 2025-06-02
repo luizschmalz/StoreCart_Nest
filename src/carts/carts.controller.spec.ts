@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { CartsController } from './carts.controller';
 import { CartService } from './carts.service';
@@ -17,6 +19,7 @@ type Cart = {
 
 describe('CartsController', () => {
   let controller: CartsController;
+  let service: CartService;
 
   const mockCartService = {
     create: jest.fn(),
@@ -38,6 +41,7 @@ describe('CartsController', () => {
     }).compile();
 
     controller = module.get<CartsController>(CartsController);
+    service = module.get<CartService>(CartService);
   });
 
   it('should be defined', () => {
@@ -53,7 +57,7 @@ describe('CartsController', () => {
 
       const response = (await controller.create(dto)) as Cart;
       expect(response).toEqual(result);
-      expect(mockCartService.create).toHaveBeenCalledWith(dto);
+      expect(service.create).toHaveBeenCalledWith(dto);
     });
   });
 
@@ -69,7 +73,7 @@ describe('CartsController', () => {
       mockCartService.findAll.mockResolvedValue(result);
 
       expect(await controller.findAll()).toEqual(result);
-      expect(mockCartService.findAll).toHaveBeenCalled();
+      expect(service.findAll).toHaveBeenCalled();
     });
   });
 
@@ -85,7 +89,7 @@ describe('CartsController', () => {
 
       const response = (await controller.findOne('2')) as Cart;
       expect(response).toEqual(result);
-      expect(mockCartService.findOne).toHaveBeenCalledWith(2);
+      expect(service.findOne).toHaveBeenCalledWith(2);
     });
   });
 
@@ -100,10 +104,9 @@ describe('CartsController', () => {
 
       mockCartService.update.mockResolvedValue(result);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const response = await controller.update('1', dto);
       expect(response).toEqual(result);
-      expect(mockCartService.update).toHaveBeenCalledWith(1, dto);
+      expect(service.update).toHaveBeenCalledWith(1, dto);
     });
   });
 
@@ -112,10 +115,9 @@ describe('CartsController', () => {
       const deletedCart = { id: 1, userId: 10 };
       mockCartService.remove.mockResolvedValue(deletedCart);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const response = await controller.remove('1');
       expect(response).toEqual(deletedCart);
-      expect(mockCartService.remove).toHaveBeenCalledWith(1);
+      expect(service.remove).toHaveBeenCalledWith(1);
     });
   });
 });

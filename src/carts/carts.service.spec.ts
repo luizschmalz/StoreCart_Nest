@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { CartService } from './carts.service';
 import { PrismaService } from 'src/prisma.service';
@@ -5,6 +6,7 @@ import { NotFoundException } from '@nestjs/common';
 
 describe('CartService', () => {
   let service: CartService;
+  let prisma: PrismaService;
 
   const mockPrisma = {
     cart: {
@@ -31,6 +33,7 @@ describe('CartService', () => {
     }).compile();
 
     service = module.get<CartService>(CartService);
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => {
@@ -49,7 +52,7 @@ describe('CartService', () => {
       mockPrisma.cart.create.mockResolvedValue(result);
 
       expect(await service.create(dto)).toEqual(result);
-      expect(mockPrisma.cart.create).toHaveBeenCalledWith({
+      expect(prisma.cart.create).toHaveBeenCalledWith({
         data: { userId: dto.userId },
       });
     });
@@ -62,7 +65,7 @@ describe('CartService', () => {
       mockPrisma.cart.findMany.mockResolvedValue(result);
 
       expect(await service.findAll()).toEqual(result);
-      expect(mockPrisma.cart.findMany).toHaveBeenCalledWith({
+      expect(prisma.cart.findMany).toHaveBeenCalledWith({
         include: {
           products: {
             include: {
@@ -81,7 +84,7 @@ describe('CartService', () => {
       mockPrisma.cart.findUnique.mockResolvedValue(result);
 
       expect(await service.findOne(1)).toEqual(result);
-      expect(mockPrisma.cart.findUnique).toHaveBeenCalledWith({
+      expect(prisma.cart.findUnique).toHaveBeenCalledWith({
         where: { id: 1 },
         include: {
           products: {
@@ -113,7 +116,7 @@ describe('CartService', () => {
         total: 25.5,
         cartId: 1,
       });
-      expect(mockPrisma.cart.findUnique).toHaveBeenCalledWith({
+      expect(prisma.cart.findUnique).toHaveBeenCalledWith({
         where: { id: 1 },
         include: {
           products: {
@@ -143,10 +146,10 @@ describe('CartService', () => {
       mockPrisma.cart.delete.mockResolvedValue(result);
 
       expect(await service.remove(1)).toEqual(result);
-      expect(mockPrisma.cartProduct.deleteMany).toHaveBeenCalledWith({
+      expect(prisma.cartProduct.deleteMany).toHaveBeenCalledWith({
         where: { cartId: 1 },
       });
-      expect(mockPrisma.cart.delete).toHaveBeenCalledWith({
+      expect(prisma.cart.delete).toHaveBeenCalledWith({
         where: { id: 1 },
       });
     });
